@@ -27,12 +27,19 @@ class CategoryController extends Controller
             $file->move('assets/uploads/category',$filename);
             $category->image = $filename;
         }
-
         $category->name = $request->input('name');
         $category->slug = $request->input('slug');
         $category->description = $request->input('description');
-        $category->status = $request->input('status') == TRUE ? '1' : '0';
-        $category->popular = $request->input('popular') == TRUE ? '1' : '0';
+        if($request->has('status')){
+            $category->status = '1';
+        }else{
+            $category->status = '0';
+        }
+        if($request->has('popular')){
+            $category->popular = '1';
+        }else{
+            $category->popular = '0';
+        }
         $category->meta_title = $request->input('meta_title');
         $category->meta_keywords = $request->input('meta_keywords');
         $category->meta_descrip = $request->input('meta_descrip');
@@ -63,8 +70,16 @@ class CategoryController extends Controller
         $category->name = $request->input('name');
         $category->slug = $request->input('slug');
         $category->description = $request->input('description');
-        $category->status = $request->input('status') == TRUE ? '1' : '0';
-        $category->popular = $request->input('popular') == TRUE ? '1' : '0';
+        if($request->has('status')){
+            $category->status = '1';
+        }else{
+            $category->status = '0';
+        }
+        if($request->has('popular')){
+            $category->popular = '1';
+        }else{
+            $category->popular = '0';
+        }
         $category->meta_title = $request->input('meta_title');
         $category->meta_keywords = $request->input('meta_keywords');
         $category->meta_descrip = $request->input('meta_descrip');
