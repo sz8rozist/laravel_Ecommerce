@@ -14,53 +14,53 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
-                            <label>
-                                Name
-                            </label>
-                            <input type="text" class="form-control" value="{{$category->name}}" name="name">
+                            <div class="input-group input-group-static mb-4">
+                                <label>Név</label>
+                                <input type="text" value="{{$category->name}}" name="name" class="form-control">
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label>
-                            Slug
-                        </label>
-                        <input type="text" value="{{$category->slug}}" class="form-control" name="slug">
+                        <div class="input-group input-group-static mb-4">
+                            <label>Slug</label>
+                            <input type="text" value="{{$category->slug}}" name="slug" class="form-control">
+                        </div>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label>
-                            Description
-                        </label>
-                        <input type="text" value="{{$category->description}}" class="form-control" name="description">
+                        <div class="input-group input-group-static mb-4">
+                            <label>Leírás</label>
+                            <input type="text" value="{{$category->description}}" name="description" class="form-control">
+                        </div>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label>
-                            Status
-                        </label>
-                        <input type="checkbox" {{$category->status == "1" ? 'checked' : ''}} name="status">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="status" value="" id="fcustomCheck1" {{$category->status == "1" ? 'checked' : ''}}>
+                            <label class="custom-control-label" for="customCheck1">Status</label>
+                        </div>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label>
-                            Popular
-                        </label>
-                        <input type="checkbox" {{$category->popular == "1" ? 'checked' : ''}} name="popular">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="popular" value="" id="fcustomCheck1" {{$category->popular == "1" ? 'checked' : ''}}>
+                            <label class="custom-control-label" for="customCheck1">Popular</label>
+                        </div>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <label>
-                            Meta Title
-                        </label>
-                        <input type="text" value="{{$category->meta_title}}" class="form-control" name="meta_title">
+                        <div class="input-group input-group-static mb-4">
+                            <label>Meta Title</label>
+                            <input type="text" value="{{$category->meta_title}}" name="meta_title" class="form-control">
+                        </div>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <label>
-                            Meta Keywords
-                        </label>
-                        <input type="text" value="{{$category->meta_keywords}}" class="form-control" name="meta_keywords">
+                        <div class="input-group input-group-static mb-4">
+                            <label>Meta Keywords</label>
+                            <input type="text" value="{{$category->meta_keywords}}"  name="meta_keywords" class="form-control">
+                        </div>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <label>
-                            Meta Description
-                        </label>
-                        <input type="text" value="{{$category->meta_descrip}}" class="form-control" name="meta_descrip">
+                        <div class="input-group input-group-static mb-4">
+                            <label>Meta Description</label>
+                            <input type="text" value="{{$category->meta_descrip}}" name="meta_descrip" class="form-control">
+                        </div>
                     </div>
                     @if($category->image)
                         <img alt="Category image" src="{{asset('assets/uploads/category/'.$category->image)}}" style="width: 100px">

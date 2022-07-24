@@ -26,7 +26,7 @@
                            <td>{{$item->description}}</td>
                            <td><img src="{{asset('assets/uploads/category/'.$item->image)}}" width="50px" alt="Image here"></td>
                            <td>
-                               <a href="{{url('edit-category/'.$item->id)}}" class="btn btn-primary">Szerkesztés</a>
+                               <a href="{{url('edit-category/'.$item->id)}}" class="btn btn-info">Szerkesztés</a>
                                <a href="{{url('delete-category/'.$item->id)}}" class="btn btn-danger">Törlés</a>
                            </td>
                        </tr>
