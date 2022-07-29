@@ -85,7 +85,7 @@ class CategoryController extends Controller
         $category->meta_descrip = $request->input('meta_descrip');
 
         $category->update();
-        return redirect('/categories')->with('status','Sikeres frissítés!');
+        return redirect('/categories')->with('status','Sikeres szerkesztés!');
     }
 
     public function delete($id){

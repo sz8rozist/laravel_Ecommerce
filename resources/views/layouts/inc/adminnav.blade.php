@@ -11,6 +11,10 @@
                     Kategóriák
                     @elseif(Request::is('add-category'))
                     Új kategória
+                    @elseif(Request::is('products'))
+                        Termékek
+                    @elseif(Request::is('add-product'))
+                        Új termék
                     @endif
                 </li>
             </ol>
@@ -21,6 +25,10 @@
                     Kategóriák
                 @elseif(Request::is('add-category'))
                     Új kategória
+                @elseif(Request::is('products'))
+                    Termékek
+                @elseif(Request::is('add-product'))
+                    Új termék
                 @endif
             </h6>
         </nav>
