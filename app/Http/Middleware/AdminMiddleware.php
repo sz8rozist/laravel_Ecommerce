@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use function Symfony\Component\String\b;
 
 class AdminMiddleware
 {
@@ -18,14 +17,9 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if(Auth::check()){
-            if(Auth::user()->role_as == "1"){
-                return $next($request);
-            }else{
-                return redirect('/home')->with('status','Te nem vagy Admin!');
-            }
-        }else{
-            return redirect('/home')->with('status','Először jelentkezz be!');
+        if(!Auth::user()->role_as == '1'){
+            return redirect('/home')->with('status','Hozzáférés megtagadva. Te nem vagy Admin');
         }
+        return $next($request);
     }
 }

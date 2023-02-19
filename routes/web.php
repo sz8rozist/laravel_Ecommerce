@@ -1,9 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Frontend\FrontendController;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,23 +18,32 @@ use App\Http\Controllers\Frontend\FrontendController;
     return view('welcome');
 });*/
 
-Route::get('/',[FrontendController::class,'index']);
 Auth::routes();
+
+Route::get('/', [App\Http\Controllers\Frontend\FrontendController::class, 'index']);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::group(['middleware' => ['auth','isAdmin']], function(){
-   Route::get('/dashboard','Admin\FrontendController@index');
-   Route::get('categories','Admin\CategoryController@index');
-   Route::get('add-category','Admin\CategoryController@add');
-   Route::post('insert-category','Admin\CategoryController@insert');
-   Route::get('edit-category/{id}',[CategoryController::class,'edit']);
-   Route::put('update-category/{id}',[CategoryController::class,'update']);
-   Route::get('delete-category/{id}',[CategoryController::class,'delete']);
-   Route::get('products',[ProductController::class,'index']);
-   Route::get('add-product',[ProductController::class,'add']);
-   Route::post('insert-product',[ProductController::class,'insert']);
-   Route::get('edit-product/{id}',[ProductController::class,'edit']);
-   Route::put('update-product/{id}',[ProductController::class,'update']);
-   Route::get('delete-product/{id}',[ProductController::class,'delete']);
+Route::prefix('admin')->middleware(['auth','isAdmin'])->group(function(){
+    Route::get('dashboard', [App\Http\Controllers\Admin\DashboardController::class,'index']);
+    //Kategóriák route
+    Route::controller(App\Http\Controllers\Admin\KategoriaController::class)->group(function(){
+        Route::get('kategoria','index');
+        Route::get('kategoria/create',  'create');
+        Route::post('kategoria','store');
+        Route::get('kategoria/{category}/edit','edit');
+        Route::put('kategoria/{category}','update');
+    });
+    //Termékek route
+    Route::controller(App\Http\Controllers\Admin\ProductController::class)->group(function(){
+        Route::get('product','index');
+        Route::get('product/create',  'create');
+        Route::post('product','store');
+        Route::get('product/{product}/edit','edit');
+        Route::put('product/{product}','update');
+        Route::get('product-image/{product_image_id}/delete','deleteImage');
+        Route::get('product/{product}/delete','delete');
+    });
+
+
 });

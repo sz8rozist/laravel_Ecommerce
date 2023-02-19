@@ -3,93 +3,138 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
-use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Http\Requests\ProductFormRequest;
+use App\Models\Kategoria;
+use App\Models\Product;
+use App\Models\ProductImage;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 
 class ProductController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $products = Product::all();
         return view('admin.product.index', compact('products'));
     }
 
-    public function add(){
-        $category = Category::all();
-        return view('admin.product.add', compact('category'));
+    public function create()
+    {
+        $categories = Kategoria::all();
+        return view('admin.product.create', compact('categories'));
     }
 
-    public function insert(Request $req){
-        $product = new Product();
-        if($req->hasFile('image')){
-            $file = $req->file('image');
-            $extension = $file->getClientOriginalExtension();
-            $filename = time().'.'.$extension;
-            $file->move('assets/uploads/product',$filename);
-            $product->image = $filename;
-        }
-        $product->name = $req->input('name');
-        $product->category_id = $req->input('category_id');
-        $product->description = $req->input('description');
-        if($req->has('status')){
-            $product->status = '1';
-        }else{
-            $product->status = '0';
-        }
-        $product->price = $req->input('price');
-        $product->quantity = $req->input('quantity');
-        $product->meta_title = $req->input('meta_title');
-        $product->meta_keywords = $req->input('meta_keywords');
-        $product->meta_description = $req->input('meta_description');
-        $product->save();
-        return redirect('/products')->with('status','Sikeres hozzáadás!');
-    }
+    public function store(ProductFormRequest $request)
+    {
+        $validatedData = $request->validated();
 
-    public function edit($id){
-        $product = Product::find($id);
-        return view('admin.product.edit',compact('product'));
-    }
+        $category = Kategoria::findOrFail($validatedData["category_id"]);
+        $product = $category->products()->create([
+            'category_id' => $validatedData["category_id"],
+            'name' => $validatedData["name"],
+            'slug' => Str::slug($validatedData["slug"]),
+            'description' => $validatedData["description"],
+            'small_description' => $validatedData["small_description"],
+            'original_price' => $validatedData["original_price"],
+            'selling_price' => $validatedData["selling_price"],
+            'status' => $request->status == true ? '1' : '0',
+            'meta_title' => $validatedData["meta_title"],
+            'meta_keyword' => $validatedData["meta_keyword"],
+            'meta_description' => $validatedData["meta_description"],
+        ]);
 
-    public function update(Request $req, $id){
-        $product = Product::find($id);
-
-        if($req->hasFile('image')){
-            $path = 'assets/uploads/product/'.$product->image;
-            if(File::exists($path)){
-                File::delete($path);
-            }
-            $file = $req->file('image');
-            $extension = $file->getClientOriginalExtension();
-            $filename = time().'.'.$extension;
-            $file->move('assets/uploads/product',$filename);
-            $product->image = $filename;
-        }
-        $product->name = $req->input('name');
-        $product->description = $req->input('description');
-        if($req->has('status')){
-            $product->status = '1';
-        }else{
-            $product->status = '0';
-        }
-        $product->price = $req->input('price');
-        $product->quantity = $req->input('quantity');
-        $product->meta_title = $req->input('meta_title');
-        $product->meta_keywords = $req->input('meta_keywords');
-        $product->meta_description = $req->input('meta_description');
-        $product->update();
-        return redirect('/products')->with('status','Sikeres szerkesztés!');
-    }
-
-    public function delete($id){
-        $product = Product::find($id);
-        if($product->image){
-            $path = 'assets/uploads/product/'.$product->image;
-            if(File::exists($path)){
-                File::delete($path);
+        if ($request->hasFile('image')) {
+            $uploadPath = 'uploads/products/';
+            $i = 1;
+            foreach ($request->file('image') as $image) {
+                $ext = $image->getClientOriginalExtension();
+                $filename = time() . $i++ . '.' . $ext;
+                $image->move($uploadPath, $filename);
+                $finalImagePathName = $uploadPath . $filename;
+                $product->productImages()->create([
+                    'product_id' => $product->id,
+                    'image' => $finalImagePathName
+                ]);
             }
         }
+
+        return redirect('admin/product')->with('message', 'Sikeres termék hozzáadás');
+    }
+
+    public function edit(Product $product)
+    {
+        $categories = Kategoria::all();
+        return view("admin.product.edit", compact('product', 'categories'));
+    }
+
+    public function update(ProductFormRequest $request, $product_id)
+    {
+
+        $validatedData = $request->validated();
+
+        $product = Kategoria::findOrFail($validatedData['category_id'])->products()->where('id', $product_id);
+
+        if ($product) {
+            $product->update([
+                'category_id' => $validatedData["category_id"],
+                'name' => $validatedData["name"],
+                'slug' => Str::slug($validatedData["slug"]),
+                'description' => $validatedData["description"],
+                'small_description' => $validatedData["small_description"],
+                'original_price' => $validatedData["original_price"],
+                'selling_price' => $validatedData["selling_price"],
+                'status' => $request->status == true ? '1' : '0',
+                'meta_title' => $validatedData["meta_title"],
+                'meta_keyword' => $validatedData["meta_keyword"],
+                'meta_description' => $validatedData["meta_description"],
+            ]);
+
+            echo $product_id;
+
+
+            if ($request->hasFile('image')) {
+                $uploadPath = 'uploads/products/';
+                $i = 1;
+                foreach ($request->file('image') as $image) {
+                    $ext = $image->getClientOriginalExtension();
+                    $filename = time() . $i++ . '.' . $ext;
+                    $image->move($uploadPath, $filename);
+                    $finalImagePathName = $uploadPath . $filename;
+                    $prod_img = new ProductImage();
+                    $prod_img->product_id = $product_id;
+                    $prod_img->image = $finalImagePathName;
+                    $prod_img->save();
+                }
+            }
+
+            return redirect('admin/product')->with('message', 'Sikeres termék frissítés');
+
+        } else {
+            return redirect('admin/product')->with('message', 'Nem található termék ezzel az azonosítóval');
+        }
+    }
+
+    public function deleteImage($product_image_id){
+        $productImage = ProductImage::findOrFail($product_image_id);
+        if(File::exists($productImage->image)){
+            File::delete($productImage->image);
+        }
+        $productImage->delete();
+        return redirect()->back()->with('message','Termék fotó sikeresen törölve');
+    }
+
+    public function delete($product_id){
+        $product = Product::findOrFail($product_id);
+        if($product->productImages){
+            foreach($product->productImages as $image){
+                if(File::exists($image->image)){
+                    File::delete($image->image);
+                }
+            }
+        }
+        $product->productImages()->delete();
         $product->delete();
-        return redirect('/products')->with('status','Sikeres törlés!');
+        return redirect()->back()->with('message','Sikeres törlés');
     }
 }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
@@ -28,14 +27,16 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected function authenticated()
-    {
-        if(Auth::user()->role_as == '1'){ // Admin login
-            return redirect('dashboard')->with('status','Welcome to your dashboard');
-        }elseif(Auth::user()->role_as == '0'){ // User Login
-            return redirect('/')->with('status','Logged in succesfully');
-        }
+    //protected $redirectTo = RouteServiceProvider::HOME;
+
+protected function authenticated(){
+    if(Auth::user()->role_as == '1'){
+return redirect('admin/dashboard')->with('message','Üdvözöllek az admin panelon.');
     }
+    else{
+        return redirect('/home')->with('status','Sikeres Bejelentkezés.');
+    }
+}
 
     /**
      * Create a new controller instance.
